@@ -12,10 +12,10 @@ jobs:
 
       - name: Install PatchKit Tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ruby-full
-          curl -sSL https://raw.githubusercontent.com/patchkit-net/patchkit-tools/master/install.sh | bash
-          echo "$HOME/.patchkit-tools/bin" >> $GITHUB_PATH
+          wget https://github.com/patchkit-net/patchkit-tools/releases/download/v3.5.1/patchkit-tools-linux-x86_64.zip
+          unzip patchkit-tools-linux-x86_64.zip -d patchkit-tools
+          echo "$(pwd)/patchkit-tools" >> $GITHUB_PATH
+          chmod +x patchkit-tools/patchkit-tools
 
       - name: Get Version Label
         id: version_info
