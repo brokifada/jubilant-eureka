@@ -1,0 +1,42 @@
+name: RustEdit Downloader
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+
+      - name: Install PatchKit Tools
+        run: gem install patchkit-tools
+
+      - name: Get Version Label
+        id: version_info
+        run: |
+          VERSION_DATA=$(curl -s https://api2.patchkit.net/1/apps/17ad1bce388b0f0a7566b8a8597c53d6/versions/latest)
+          LABEL=$(echo $VERSION_DATA | grep -oP '"label":"\K[^"]+')
+          echo "VERSION_LABEL=$LABEL" >> $GITHUB_OUTPUT
+          echo "Последняя версия: $LABEL"
+
+      - name: Download RustEdit
+        run: |
+          mkdir rustedit_full
+          patchkit-tools download-app --secret 17ad1bce388b0f0a7566b8a8597c53d6 --output rustedit_full/ --force
+
+      - name: Create ZIP
+        run: |
+          zip -r RustEdit_v${{ steps.version_info.outputs.VERSION_LABEL }}.zip rustedit_full/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RustEdit_v${{ steps.version_info.outputs.VERSION_LABEL }}
+          path: RustEdit_v${{ steps.version_info.outputs.VERSION_LABEL }}.zip
