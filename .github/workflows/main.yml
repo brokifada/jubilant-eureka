@@ -10,13 +10,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1'
-
       - name: Install PatchKit Tools
-        run: gem install patchkit-tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ruby-full
+          curl -sSL https://raw.githubusercontent.com/patchkit-net/patchkit-tools/master/install.sh | bash
+          echo "$HOME/.patchkit-tools/bin" >> $GITHUB_PATH
 
       - name: Get Version Label
         id: version_info
